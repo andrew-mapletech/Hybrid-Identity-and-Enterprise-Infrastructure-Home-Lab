@@ -1,4 +1,4 @@
-# 🔐 Hybrid Identity and Zero Trust Enterprise Lab
+# 🔐 Hybrid Identity and Enterprise Infrastructure Lab
 
 This project implements a **real-world hybrid enterprise IT environment** using on-premises infrastructure integrated with **Microsoft Entra ID (Azure Active Directory)** and modern **Zero Trust security architecture**.
 
