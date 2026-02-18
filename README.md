@@ -15,7 +15,7 @@ This lab was built to demonstrate hands-on skills in:
 - Hybrid identity (Active Directory + Entra ID)  
 - Zero Trust security design  
 - Enterprise authentication & authorization  
-- Secure cloud access  
+- Secure remote access  
 - On-prem and cloud integration  
 - Centralized file storage and access control  
 - Security monitoring and auditability  
@@ -32,26 +32,27 @@ This lab was built to demonstrate hands-on skills in:
 | Cloud Identity | Microsoft Entra ID |
 | Sync | Azure AD Connect |
 | Storage | TrueNAS |
+| Secure Access | Twingate VPN Connector (Proxmox LXC) |
 | Security | MFA, Conditional Access, RBAC, PIM, Defender |
-
-This environment uses **Software-Defined Networking (SDN)** inside Proxmox instead of VLANs, allowing secure network isolation and firewalling between virtual systems.
 
 ---
 
 ## 🧩 What Was Deployed
 
 ### On-Prem Infrastructure
-- Windows Server 2022 Domain Controller  
+- Windows Server 2025 Domain Controller  
 - Linux internal application server  
 - pfSense firewall virtual machine  
 - TrueNAS storage server  
 - Proxmox virtualization host  
+- Twingate Connector deployed as a container  
 
 ### Cloud & Identity
 - Microsoft Entra ID tenant  
 - Azure AD Connect for hybrid sync  
 - Hybrid users and groups  
-- Cloud authentication and authorization  
+- Entra ID SSO for Twingate  
+- Entra ID authentication for Proxmox  
 
 ---
 
@@ -65,7 +66,20 @@ This allows:
 - Conditional Access and MFA enforcement  
 - A single identity across on-prem and cloud  
 
-This mirrors how real enterprises run Microsoft 365 with local infrastructure.
+Because Active Directory runs inside a VM, **Proxmox authentication is integrated with Entra ID**, allowing secure cloud-based SSO access to the virtualization platform.
+
+---
+
+## 🌍 Secure Remote Access (Twingate)
+
+Secure remote access is implemented using **Twingate** with:
+
+- A Twingate Connector deployed as a container inside the lab  
+- Entra ID used as the Identity Provider  
+- SSO and MFA enforced for remote users  
+- Zero-trust access to internal services without exposing ports  
+
+This allows users to securely access internal servers and applications from anywhere.
 
 ---
 
@@ -126,6 +140,8 @@ This repository contains real screenshots and exports showing:
 - Azure AD Connect sync status  
 - Conditional Access policies  
 - MFA enforcement  
+- Twingate Entra ID SSO  
+- Proxmox Entra ID login  
 - Active Directory OU structure  
 - TrueNAS domain integration  
 - Defender alerts  
@@ -144,6 +160,7 @@ This includes:
 - Architecture  
 - Identity design  
 - Security controls  
+- Remote access design  
 - Storage configuration  
 - Screenshots and logs  
 
@@ -153,15 +170,18 @@ This includes:
 
 | Area | Skills Proven |
 |------|--------------|
-| Cloud | Entra ID, Conditional Access, RBAC |
+| Cloud | Entra ID, Conditional Access, SSO |
 | Security | Zero Trust, MFA, PIM |
 | Systems | Windows Server, Linux |
 | Infrastructure | Proxmox, pfSense |
 | Storage | TrueNAS, backups |
+| Remote Access | Twingate VPN |
 | Hybrid | On-prem + cloud integration |
 
 ---
 
 ## 🧠 Why This Matters
 
-This project demonstrates the ability to design, deploy, secure, and operate a **real enterprise-grade hybrid IT environment** — the same architecture used by organizations running Microsoft 365 with on-prem infrastructure.
+This project demonstrates the ability to design, deploy, secure, and operate a **real enterprise-grade hybrid IT environment** — including identity, security, cloud, storage, and secure remote access.
+
+This is the same architecture used by modern organizations running Microsoft 365 with on-prem infrastructure.
