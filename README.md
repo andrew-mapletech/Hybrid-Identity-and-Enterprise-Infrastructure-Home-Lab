@@ -1,187 +1,210 @@
-# 🔐 Hybrid Identity and Enterprise Infrastructure Lab
+# 🏗 Hybrid Enterprise Infrastructure Homelab
 
-This project implements a **real-world hybrid enterprise IT environment** using on-premises infrastructure integrated with **Microsoft Entra ID (Azure Active Directory)** and modern **Zero Trust security architecture**.
+![Project](https://img.shields.io/badge/project-homelab-blue)
+![Infrastructure](https://img.shields.io/badge/infrastructure-hybrid-green)
+![Security](https://img.shields.io/badge/security-defense--in--depth-red)
 
-It simulates how small-to-medium organizations run **Microsoft 365 with local servers**, enforcing secure identity, multi-factor authentication, conditional access, and least-privilege administration.
+An enterprise-grade hybrid infrastructure lab designed to simulate a **small business IT environment**.  
+This project demonstrates practical experience in **systems administration, networking, identity management, and security architecture** by integrating on-premises infrastructure with cloud identity services.
 
-This environment is built on a **real Microsoft tenant** and a **real virtualization platform**, not a mock or simulator.
-
----
-
-## 🎯 Project Goals
-
-This lab was built to demonstrate hands-on skills in:
-
-- Hybrid identity (Active Directory + Entra ID)  
-- Zero Trust security design  
-- Enterprise authentication & authorization  
-- Secure remote access  
-- On-prem and cloud integration  
-- Centralized file storage and access control  
-- Security monitoring and auditability  
+The environment focuses on implementing modern enterprise practices such as **centralized identity governance, defense-in-depth security, and controlled remote access**.
 
 ---
 
-## 🏗️ High-Level Architecture
+# 🌐 Architecture Overview
+
+The infrastructure is hosted on a **Dell PowerEdge R720** running **Proxmox VE** as the virtualization platform. Core infrastructure services are deployed as virtual machines to replicate a real-world enterprise environment.
+The environment integrates:
+
+- On-prem infrastructure services
+- Hybrid identity with Microsoft Entra ID
+- Firewall-enforced network boundary protection
+- Centralized storage with directory-based access control
+- Secure remote access without exposing internal services
+
+---
+
+# 🧰 Core Infrastructure Components
 
 | Layer | Technology |
-|------|-----------|
-| Hypervisor | Proxmox |
-| Firewall | pfSense |
-| Identity | Windows Server Active Directory |
+|------|-------------|
+| Virtualization | Proxmox VE |
+| Firewall & Gateway | pfSense |
+| Identity Authority | Windows Server (Active Directory) |
 | Cloud Identity | Microsoft Entra ID |
-| Sync | Azure AD Connect |
-| Storage | TrueNAS |
-| Secure Access | Twingate VPN Connector (Proxmox LXC) |
-| Security | MFA, Conditional Access, RBAC, PIM, Defender |
+| Hybrid Identity Sync | Azure AD Connect |
+| Storage | TrueNAS (ZFS) |
+| Secure Remote Access | Twingate |
 
 ---
 
-## 🧩 What Was Deployed
+# 🛡 Security Architecture
 
-### On-Prem Infrastructure
-- Windows Server 2025 Domain Controller  
-- Linux internal application server  
-- pfSense firewall virtual machine  
-- TrueNAS storage server  
-- Proxmox virtualization host  
-- Twingate Connector deployed as a container  
+The environment follows a **defense-in-depth security model**, implementing multiple layers of protection across the infrastructure.
 
-### Cloud & Identity
-- Microsoft Entra ID tenant  
-- Azure AD Connect for hybrid sync  
-- Hybrid users and groups  
-- Entra ID SSO for Twingate  
-- Entra ID authentication for Proxmox  
+Security controls include:
+
+- **Firewall Boundary Protection** – pfSense enforces deny-by-default inbound rules and NAT routing.
+- **Identity-Based Access Control** – Authentication managed through Active Directory and Microsoft Entra ID.
+- **Multi-Factor Authentication (MFA)** – Required for privileged administrative access.
+- **Role-Based Access Control (RBAC)** – Administrative privileges assigned using least-privilege principles.
+- **Secure Remote Access** – Twingate provides identity-based access to internal services without exposing inbound ports.
 
 ---
 
-## 🔑 Hybrid Identity Implementation
+# 🔐 Identity Architecture
 
-A full **Active Directory domain** was created and synchronized to **Microsoft Entra ID** using Azure AD Connect.
+Hybrid identity integration is implemented using **Azure AD Connect**, synchronizing on-premises Active Directory identities with **Microsoft Entra ID**.
 
-This allows:
-- Users to log into cloud services using on-prem credentials  
-- Centralized identity management  
-- Conditional Access and MFA enforcement  
-- A single identity across on-prem and cloud  
+This architecture enables:
 
-Because Active Directory runs inside a VM, **Proxmox authentication is integrated with Entra ID**, allowing secure cloud-based SSO access to the virtualization platform.
+- centralized identity governance
+- cloud-based access security policies
+- conditional access enforcement
+- multi-factor authentication protection
 
----
-
-## 🌍 Secure Remote Access (Twingate)
-
-Secure remote access is implemented using **Twingate** with:
-
-- A Twingate Connector deployed as a container inside the lab  
-- Entra ID used as the Identity Provider  
-- SSO and MFA enforced for remote users  
-- Zero-trust access to internal services without exposing ports  
-
-This allows users to securely access internal servers and applications from anywhere.
+Active Directory remains the primary authentication authority for internal infrastructure services.
 
 ---
 
-## 🔐 Zero Trust Security Design
+# 🌐 Network Architecture
 
-Zero Trust is enforced by requiring verification for every access request, including:
+The internal infrastructure operates on a dedicated private subnet behind the pfSense firewall.
 
-- **Multi-Factor Authentication (MFA)**  
-- **Conditional Access policies**  
-- **Role-Based Access Control (RBAC)**  
-- **Privileged Identity Management (PIM)**  
-- **Microsoft Defender**  
+```
+Internal Network: 10.0.0.0/24
+Gateway: 10.0.0.1 (pfSense)
+```
 
-No user or device is trusted by default.
+Key infrastructure systems:
 
----
+| System | Role | IP |
+|------|------|------|
+| pfSense | Firewall / Gateway | 10.0.0.1 |
+| Domain Controller | AD DS, DNS, DHCP | 10.0.0.10 |
+| TrueNAS | Storage Server | 10.0.0.20 |
 
-## 🔥 Security Demonstration (Attack & Defense)
-
-To demonstrate security awareness:
-1. A weak admin role was intentionally created  
-2. The risk of privilege escalation was demonstrated  
-3. The environment was secured using:
-   - Least privilege  
-   - PIM  
-   - MFA  
-   - Conditional Access  
-
-This shows both how attacks happen **and** how they are mitigated.
+The firewall isolates internal infrastructure from direct internet exposure while controlling outbound traffic.
 
 ---
 
-## 💾 Storage & Access Control
+# 💾 Storage Architecture
 
-TrueNAS is integrated with Active Directory to provide:
-- Domain-based file shares  
-- Group-based access control  
-- Snapshot backups  
-- Restore testing  
+Centralized storage is implemented using **TrueNAS**, utilizing the **ZFS filesystem** to provide data integrity protection and snapshot capability.
 
----
+Features include:
 
-## 📊 Monitoring & Logging
+- ZFS checksum-based data integrity
+- snapshot-based data recovery
+- SMB file sharing
+- Active Directory authentication integration
 
-Security and access visibility is provided through:
-- Entra ID sign-in logs  
-- Audit logs  
-- Microsoft Defender alerts  
-- Windows event logs  
-- Firewall logs  
+Storage permissions are controlled through **domain-based access control**, ensuring consistent identity governance across the environment.
 
 ---
 
-## 📸 Proof of Implementation
+# 📊 Logging & Monitoring
 
-This repository contains real screenshots and exports showing:
-- Entra ID users and groups  
-- Azure AD Connect sync status  
-- Conditional Access policies  
-- MFA enforcement  
-- Twingate Entra ID SSO  
-- Proxmox Entra ID login  
-- Active Directory OU structure  
-- TrueNAS domain integration  
-- Defender alerts  
+Infrastructure visibility is maintained through logging across multiple systems:
 
-See the `/screenshots` folder for evidence.
+- **Windows Event Logs** (Active Directory authentication events)
+- **pfSense firewall logs** (network traffic monitoring)
+- **Proxmox host logs** (virtualization infrastructure events)
+
+These logs provide operational insight into authentication activity, system health, and network behavior.
 
 ---
 
-## 📄 Full Documentation
+# 🔁 Backup & Recovery
 
-A complete technical breakdown is available in:
+A layered backup strategy protects both infrastructure services and stored data.
 
-`documentation/Hybrid_Zero_Trust_Lab.pdf`
+Protection mechanisms include:
 
-This includes:
-- Architecture  
-- Identity design  
-- Security controls  
-- Remote access design  
-- Storage configuration  
-- Screenshots and logs  
+- **Proxmox virtual machine backups**
+- **TrueNAS ZFS snapshots**
+- periodic recovery testing to validate system restoration procedures
+
+This design allows recovery of both full virtual machines and individual datasets.
 
 ---
 
-## 🏆 What This Project Demonstrates
+# ⚠ Risks & Architectural Limitations
 
-| Area | Skills Proven |
-|------|--------------|
-| Cloud | Entra ID, Conditional Access, SSO |
-| Security | Zero Trust, MFA, PIM |
-| Systems | Windows Server, Linux |
-| Infrastructure | Proxmox, pfSense |
-| Storage | TrueNAS, backups |
-| Remote Access | Twingate VPN |
-| Hybrid | On-prem + cloud integration |
+As a homelab environment, several limitations exist:
+
+- single Proxmox host (no high availability cluster)
+- single domain controller
+- flat internal network without VLAN segmentation
+- no centralized SIEM platform
+
+These constraints were intentionally accepted to maintain architectural clarity while focusing on core infrastructure and security concepts.
 
 ---
 
-## 🧠 Why This Matters
+# 📚 Lessons Learned
 
-This project demonstrates the ability to design, deploy, secure, and operate a **real enterprise-grade hybrid IT environment** — including identity, security, cloud, storage, and secure remote access.
+Key insights from this project include:
 
-This is the same architecture used by modern organizations running Microsoft 365 with on-prem infrastructure.
+- identity is the primary security boundary in modern infrastructure
+- layered security architecture significantly reduces attack surface
+- centralized identity management simplifies access governance
+- operational planning (logging, monitoring, backups) is critical for system resilience
+
+---
+
+# 📄 Full Technical Documentation
+
+Complete architecture documentation is available in the repository:
+
+```
+/documentation/Hybrid-Enterprise-Infrastructure.pdf
+```
+
+The document includes detailed explanations of the infrastructure design, security architecture, network topology, and operational considerations.
+
+---
+
+# 🧰 Technologies Used
+
+```
+Proxmox VE
+pfSense
+Windows Server (Active Directory)
+Microsoft Entra ID
+Azure AD Connect
+TrueNAS (ZFS)
+Twingate
+```
+
+---
+
+## 📸 Implementation Proof
+
+### Proxmox Virtualization Host
+Core infrastructure services running on Proxmox.
+
+![Proxmox VM List](Screenshots/proxmox-vm-infrastructure.png)
+
+### Active Directory Domain Structure
+Domain users, groups, and organizational units managed through Active Directory.
+
+![Active Directory](Screenshots/active-directory-domain.png)
+
+---
+
+# 🎯 Project Goals
+
+The objective of this lab was to simulate the design and operation of a small enterprise infrastructure environment. Key goals included:
+
+• Implementing hybrid identity between on-premises Active Directory and Microsoft Entra ID  
+• Designing a secure network boundary using pfSense  
+• Deploying centralized storage with directory-based access control  
+• Enforcing modern security controls such as MFA and RBAC  
+• Practicing infrastructure documentation and architectural design
+
+---
+
+# 👤 Author
+
+**Thit Lwin Oo**
