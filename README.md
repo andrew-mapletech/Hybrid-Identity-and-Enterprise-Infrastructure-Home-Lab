@@ -207,4 +207,4 @@ The objective of this lab was to simulate the design and operation of a small en
 
 # 👤 Author
 
-**Thit Lwin Oo**
+**Thit Sann Oo**
